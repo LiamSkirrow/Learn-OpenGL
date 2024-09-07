@@ -117,13 +117,13 @@ int main(int argc, char * argv[]) {
     // create a vertex array object, with an assigned ID
     unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
     // bind the VAO so that each subsequent VBO, VEO... call will
     // be stored inside this VAO object
     glBindVertexArray(VAO);
 
     // create a vertex buffer object with a set ID
     // bind the ID to an array buffer
+    glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // copy our vertex data (in array 'vertices') to the internal buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
