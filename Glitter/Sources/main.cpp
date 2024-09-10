@@ -1,5 +1,6 @@
 // Local Headers
 #include "glitter.hpp"
+#include "shader.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -10,23 +11,23 @@
 #include <cstdlib>
 #include <iostream>
 
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;   // the position variable has attribute position 0\n"
-    "layout (location = 1) in vec3 aColor; // the color variable has attribute position 1\n"
-    "out vec3 ourColor; // output a color to the fragment shader\n"
-    "void main()\n"
-    "{\n"
-    "    gl_Position = vec4(aPos, 1.0);\n"
-    "    ourColor = aColor; // set ourColor to the input color we got from the vertex data\n"
-    "}\n";
+// const char *vertexShaderSource = "#version 330 core\n"
+//     "layout (location = 0) in vec3 aPos;   // the position variable has attribute position 0\n"
+//     "layout (location = 1) in vec3 aColor; // the color variable has attribute position 1\n"
+//     "out vec3 ourColor; // output a color to the fragment shader\n"
+//     "void main()\n"
+//     "{\n"
+//     "    gl_Position = vec4(aPos, 1.0);\n"
+//     "    ourColor = aColor; // set ourColor to the input color we got from the vertex data\n"
+//     "}\n";
 
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "in vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = vec4(ourColor, 1.0);\n"
-    "};\n";
+// const char *fragmentShaderSource = "#version 330 core\n"
+//     "out vec4 FragColor;\n"
+//     "in vec3 ourColor;\n"
+//     "void main()\n"
+//     "{\n"
+//     "    FragColor = vec4(ourColor, 1.0);\n"
+//     "};\n";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);  
 void processInput(GLFWwindow *window);
@@ -58,58 +59,9 @@ int main(int argc, char * argv[]) {
         return -1;
     }
 
-    // create the vertex shader object, with an assigned ID
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    // now attach our vertex shader object and source code together
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // check that compilation went ok
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // create the fragment shader object, with an assigned ID
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    // now attach our fragment shader object and source code together
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // check that compilation went ok
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // ----------------------------
-    // now that both the vertex and fragment shaders are inserted and compiled
-    // we can define our shader program object
-
-    // create a shader program object, with an assigned ID
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    // attach our shaders from above to the shader program
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    // check that compilation went ok
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-
-    // can delete the now redundant shader objects 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    // ----------------------------
-    // configure the vertex data and set up the attributes
+    // build and compile our shader program
+    // ------------------------------------
+    Shader ourShader("../Glitter/Sources/vertex_shader.glsl", "../Glitter/Sources/fragment_shader.glsl");
 
     // vertex attributes
     float vertices[] = {
@@ -160,7 +112,7 @@ int main(int argc, char * argv[]) {
         glClear(GL_COLOR_BUFFER_BIT);
         
         // assign the program to be used
-        glUseProgram(shaderProgram);
+        ourShader.use();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
